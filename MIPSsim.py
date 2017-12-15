@@ -502,46 +502,45 @@ def WriteDisassemblely():
             i += 1
         outputfile.write("\n")
 
-def WriteSimulation():
+def WriteSimulation(cycle, infolist):
     "this function used to write Simulation result to a txt file"
     try:
-        outputfile = open("C:/Users/Hanyue Zheng/PycharmProjects/ComputerStructureproj1/simulation.txt", "w")
+        outputfile = open("C:/Users/Hanyue Zheng/PycharmProjects/ComputerStructureproj1/simulation.txt", "a")
     except IOError, e:
         print "file open error: ", e
-    for cycle, infolist in SimulationDic.items():
-        for i in range(20):
-            outputfile.write("-")
-        outputfile.write("\n")
-        outputfile.write("Cycle:" + str(cycle)  + "\t")
-        outputfile.write(str(infolist[1]) + " ")
-        outputfile.write(str(infolist[2]) + " ")
-        i = 3
-        while i < len(infolist):
-            if i == len(infolist) - 1:
-                outputfile.write(str(infolist[i]))
+    for i in range(20):
+        outputfile.write("-")
+    outputfile.write("\n")
+    outputfile.write("Cycle:" + str(cycle)  + "\t")
+    outputfile.write(str(infolist[1]) + " ")
+    outputfile.write(str(infolist[2]) + " ")
+    i = 3
+    while i < len(infolist):
+        if i == len(infolist) - 1:
+            outputfile.write(str(infolist[i]))
+        else:
+            outputfile.write(str(infolist[i]) + ", ")
+        i += 1
+    outputfile.write("\n" + "\n")
+    outputfile.write("Registers")
+    for i in range(32):
+        if i % 8 == 0:
+            outputfile.write("\n")
+            if i < 10:
+                outputfile.write("R" +  "0" + str(i) + ":" + "\t" )
             else:
-                outputfile.write(str(infolist[i]) + ", ")
-            i += 1
-        outputfile.write("\n" + "\n")
-        outputfile.write("Registers")
-        for i in range(32):
-            if i % 8 == 0:
-                outputfile.write("\n")
-                if i < 10:
-                    outputfile.write("R" +  "0" + str(i) + ":" + "\t" )
-                else:
-                    outputfile.write("R" + str(i) + ":" + "\t")
-            outputfile.write(str(RigsterDic["R" + str(i)]) + "\t")
-        outputfile.write("\n" + "\n")
-        outputfile.write("Data")
-        j = Pclist[2]
-        while j <= Pclist[3]:
-            if (j - Pclist[2]) % 32 == 0:
-                outputfile.write("\n")
-                outputfile.write(str(j) + ":" + "\t")
-            outputfile.write(str(ValueDic[j]) + "\t")
-            j += 4
-        outputfile.write("\n" + "\n")
+                outputfile.write("R" + str(i) + ":" + "\t")
+        outputfile.write(str(RigsterDic["R" + str(i)]) + "\t")
+    outputfile.write("\n" + "\n")
+    outputfile.write("Data")
+    j = Pclist[2]
+    while j <= Pclist[3]:
+        if (j - Pclist[2]) % 32 == 0:
+            outputfile.write("\n")
+            outputfile.write(str(j) + ":" + "\t")
+        outputfile.write(str(ValueDic[j]) + "\t")
+        j += 4
+    outputfile.write("\n" + "\n")
 
 def Simulation():
     "this function used to simulate the process of instructions"
@@ -555,47 +554,55 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "ADDI":
             RigsterDic[information[3]] = RigsterDic[information[4]] + int(information[5][1:])
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "BREAK":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             terminalflag = False
         elif instruction == "SUB":
             RigsterDic[information[3]] = RigsterDic[information[4]] - RigsterDic[information[5]]
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "MUL":
             RigsterDic[information[3]] = int(RigsterDic[information[4]]) * int(RigsterDic[information[5]])
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "AND":
             RigsterDic[information[3]] = RigsterDic[information[4]] and RigsterDic[information[5]]
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "OR":
             RigsterDic[information[3]] = RigsterDic[information[4]] or RigsterDic[information[5]]
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "XOR":
             RigsterDic[information[3]] = RigsterDic[information[4]] ^ RigsterDic[information[5]]
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "SLT":
             if RigsterDic[information[4]] < RigsterDic[information[5]]:
@@ -605,39 +612,46 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "ANDI":
             RigsterDic[information[3]] = RigsterDic[information[4]] and int(information[5][1:])
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "ORI":
             RigsterDic[information[3]] = RigsterDic[information[4]] or int(information[5][1:])
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "XORI":
             RigsterDic[information[3]] = RigsterDic[information[4]] ^ int(information[5][1:])
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "J":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc = int(information[3][1:])
         elif instruction == "JR":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc = int(RigsterDic[information[3]])
         elif instruction == "BGTZ":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             if RigsterDic[information[3]] > 0:
                 nowpc = nowpc + 4 + int(information[4][1:])
             else:
@@ -646,6 +660,7 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             if RigsterDic[information[3]] < 0:
                 nowpc = nowpc + 4 + int(information[4][1:])
             else:
@@ -657,6 +672,7 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "SW":
             index1 = information[4].find("(")
@@ -665,16 +681,19 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "NOP":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "BEQ":
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             if int(RigsterDic[information[3]]) == int(RigsterDic[information[4]]):
                 nowpc = nowpc + int(information[5][1: ]) + 4
             else:
@@ -692,6 +711,7 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "SRL":
             decimal = tentotwo(RigsterDic[information[4]])
@@ -706,6 +726,7 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "SRA":
             decimal = tentotwo(RigsterDic[information[4]])
@@ -720,12 +741,14 @@ def Simulation():
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         elif instruction == "NOR":
             RigsterDic[information[3]] = RigsterDic[information[4]] & RigsterDic[information[5]]
             cycle = Pclist[0] + 1
             Pclist[0] += 1
             SimulationDic[cycle] = information
+            WriteSimulation(cycle, information)
             nowpc += 4
         else:
             nowpc += 4
@@ -735,5 +758,7 @@ if __name__ == '__main__':
     ProcessFile(filelineArr)
     WriteDisassemblely()
     Simulation()
-    WriteSimulation()
+    print "SimulationDic ", SimulationDic
+    print "ValueDic ", ValueDic
+    print  "RegisterDic ", RigsterDic
 
